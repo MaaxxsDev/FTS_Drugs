@@ -2,9 +2,14 @@ package net.fts.drugs.plugin;
 
 import net.fts.drugs.commands.drugsCommand;
 import net.fts.drugs.configs.DrugsConfig;
+import net.fts.drugs.listener.InventoryClickListener;
 import net.fts.drugs.utils.StorageManager;
 import net.fts.drugs.utils.storage.InventoryStorage;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Objects;
 
 public class DrugsPlugin extends JavaPlugin {
 
@@ -24,7 +29,10 @@ public class DrugsPlugin extends JavaPlugin {
         drugsConfig = new DrugsConfig();
         storageManager = new StorageManager();
 
-        getCommand("drugs").setExecutor(new drugsCommand());
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new InventoryClickListener(), this);
+
+        Objects.requireNonNull(getCommand("drugs")).setExecutor(new drugsCommand());
     }
 
     @Override
