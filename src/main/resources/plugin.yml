@@ -1,0 +1,4 @@
+name: FTS_Drugs
+version: 1.0
+author: Maaxxs_
+main: net.fts.drugs.plugin.DrugsPlugin
