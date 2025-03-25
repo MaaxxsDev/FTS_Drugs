@@ -2,6 +2,7 @@ package net.fts.drugs.configs;
 
 import net.fts.drugs.objects.Drug;
 import net.fts.drugs.plugin.DrugsPlugin;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -37,6 +38,7 @@ public class DrugsConfig {
     public List<Drug> getDrugs(){
         List<Drug> drugs = new ArrayList<>();
         for (String result : configuration.getConfigurationSection("").getKeys(false)) {
+            Material material = Material.valueOf(result+".Material");
             List<String> stringList = configuration.getStringList(result+".Effects");
             List<PotionEffect> potionsEffects = new ArrayList<>();
 
@@ -64,7 +66,7 @@ public class DrugsConfig {
                 saveConfig();
             }
 
-            Drug drug = new Drug(result, potionsEffects);
+            Drug drug = new Drug(result, material, potionsEffects);
             drugs.add(drug);
         }
         return drugs;
@@ -87,14 +89,15 @@ public class DrugsConfig {
     public void addDrug(Drug drug){
         if(getDrug(drug.getName())!=null)
             return;
+        configuration.set(drug.getName()+".Material", drug.getMaterial());
 
         List<String> effects = new ArrayList<>();
         for (PotionEffect effect : drug.getEffects()) {
             String str = effect.toString()+":"+effect.getDuration()+":"+effect.getAmplifier();
             effects.add(str);
         }
-
         configuration.set(drug.getName()+".Effects", effects);
+
         saveConfig();
     }
 
