@@ -14,17 +14,20 @@ public class DrugSetup implements Setup{
 
     private final Player player;
     private final Inventory craftingTable;
+    private final Inventory addictionMultiplierInv;
     private final Inventory resultInv;
     private List<String> shape;
     private HashMap<String, ItemStack> ingridients;
     private ItemStack result;
     private List<PotionEffect> effects;
+    private double addictionMultiplier;
     String name;
 
     public DrugSetup(Player player) {
         this.player = player;
         this.craftingTable = DrugsPlugin.getInstance().getStorageManager().getSetupInventoryStorage().getWorkbench();
         this.resultInv = DrugsPlugin.getInstance().getStorageManager().getSetupInventoryStorage().getResult();
+        this.addictionMultiplierInv = DrugsPlugin.getInstance().getStorageManager().getSetupInventoryStorage().getMultiplier();
         this.effects = new ArrayList<>();
 
         DrugsPlugin.getInstance().getStorageManager().getSetupManager().setups.add(this);
@@ -77,5 +80,16 @@ public class DrugSetup implements Setup{
     }
     public String getName() {
         return name;
+    }
+
+    public void setAddictionMultiplier(double addictionMultiplier) {
+        this.addictionMultiplier = addictionMultiplier;
+    }
+    public double getAddictionMultiplier() {
+        return addictionMultiplier;
+    }
+
+    public Inventory getAddictionMultiplierInv() {
+        return addictionMultiplierInv;
     }
 }

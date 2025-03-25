@@ -108,6 +108,25 @@ public class SetupInventoryStorage {
         return inventory;
     }
 
+    public Inventory getMultiplier(){
+        Inventory inventory = Bukkit.createInventory(null, 9*3, MiniMessage.miniMessage().deserialize("Stelle die Stärke der Suchtentwicklung ein"));
+
+        ItemStack placeholder = new ItemCreator(Material.GRAY_STAINED_GLASS_PANE).displayName(Component.empty()).build();
+
+        for(int i = 0; i <= 8; i++){
+            inventory.setItem(i, placeholder);
+        }
+        for(int i = 18; i <= 26; i++){
+            inventory.setItem(i, placeholder);
+        }
+
+        inventory.setItem(13, new ItemCreator(Material.PAPER).displayName(MiniMessage.miniMessage().deserialize("AddictionMultiplier: 1.00")).lore(Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Linksklick zum Erhöhen"), MiniMessage.miniMessage().deserialize("<gray>Rechtsklick zum Verringern")).build());
+
+        inventory.setItem(26, new ItemCreator(Material.GREEN_DYE).displayName(MiniMessage.miniMessage().deserialize("<green>Weiter")).lore(Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Klicke um den nächsten Schritt zu beginnen")).build());
+
+        return inventory;
+    }
+
     public Inventory getPotionManager(PotionEffectType type){
         Inventory inventory = Bukkit.createInventory(null, 9*3, MiniMessage.miniMessage().deserialize("Modifiziere den PotionEffect"));
 

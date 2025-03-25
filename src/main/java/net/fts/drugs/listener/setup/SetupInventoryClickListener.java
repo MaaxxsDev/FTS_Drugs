@@ -166,9 +166,7 @@ public class SetupInventoryClickListener implements Listener {
                         player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Du musst mindestens ein Effekt auswählen!"));
                         return;
                     }
-                    player.closeInventory(InventoryCloseEvent.Reason.OPEN_NEW);
-                    player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Schreibe den Namen, den die Drogen haben soll, in den Chat"));
-                    player.sendMessage(MiniMessage.miniMessage().deserialize("<gray><i>Sneake, wenn das Setup abgebrochen werden soll"));
+                    player.openInventory(setup.getAddictionMultiplierInv());
                 }
             }
 
@@ -217,6 +215,37 @@ public class SetupInventoryClickListener implements Listener {
                 }
             }
 
+            if(Objects.equals(event.getView().title(), MiniMessage.miniMessage().deserialize("Stelle die Stärke der Suchtentwicklung ein"))){
+                event.setCancelled(true);
+
+                if(event.getRawSlot()==13){
+                    String text = PlainTextComponentSerializer.plainText().serialize(event.getCurrentItem().getItemMeta().displayName());
+                    String[] str = text.split(" ");
+                    double duration = Double.parseDouble(str[1]);
+                    if(event.isLeftClick()){
+                        duration+=0.25;
+                    }else if(event.isRightClick()){
+                        if(duration>0.25){
+                            duration-=0.25;
+                        }
+                    }
+                    event.getClickedInventory().setItem(13, new ItemCreator(Material.PAPER).displayName(MiniMessage.miniMessage().deserialize("AddictionMultiplier: "+duration)).lore(Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Linksklick zum Erhöhen"), MiniMessage.miniMessage().deserialize("<gray>Rechtsklick zum Verringern")).build());
+                    player.updateInventory();
+                }
+                if(event.getRawSlot()==26){
+                    double multiplier = Double.parseDouble(PlainTextComponentSerializer.plainText().serialize(event.getClickedInventory().getItem(13).getItemMeta().displayName()).split(" ")[1]);
+                    setup.setAddictionMultiplier(multiplier);
+
+                    if(setup.getEffects().isEmpty()){
+                        player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Du musst mindestens ein Effekt auswählen!"));
+                        return;
+                    }
+                    player.closeInventory(InventoryCloseEvent.Reason.OPEN_NEW);
+                    player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Schreibe den Namen, den die Drogen haben soll, in den Chat"));
+                    player.sendMessage(MiniMessage.miniMessage().deserialize("<gray><i>Sneake, wenn das Setup abgebrochen werden soll"));
+                }
+            }
+
         }
 
     }
@@ -255,6 +284,12 @@ public class SetupInventoryClickListener implements Listener {
                 }
             }
             if(Objects.equals(event.getView().title(), MiniMessage.miniMessage().deserialize("Modifiziere den PotionEffect"))){
+                if(!event.getReason().equals(InventoryCloseEvent.Reason.OPEN_NEW)) {
+                    player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Das Setup wurde abgebrochen"));
+                    DrugsPlugin.getInstance().getStorageManager().getSetupManager().setups.remove(setup);
+                }
+            }
+            if(Objects.equals(event.getView().title(), MiniMessage.miniMessage().deserialize("Stelle die Stärke der Suchtentwicklung ein"))){
                 if(!event.getReason().equals(InventoryCloseEvent.Reason.OPEN_NEW)) {
                     player.sendMessage(MiniMessage.miniMessage().deserialize("<gray>Das Setup wurde abgebrochen"));
                     DrugsPlugin.getInstance().getStorageManager().getSetupManager().setups.remove(setup);

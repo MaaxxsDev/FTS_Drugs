@@ -46,6 +46,7 @@ public class DrugsConfig {
             HashMap<String, ItemStack> ingridients = new HashMap<>();
             List<PotionEffect> potionsEffects = new ArrayList<>();
             ItemStack result_item = configuration.getItemStack(result+".Result");
+            double addictionMultiplier = configuration.getDouble(result+".AddictionMultiplier");
 
             boolean changedEffects = false;
 
@@ -58,7 +59,7 @@ public class DrugsConfig {
                 PotionEffectType type = PotionEffectType.getByName(effectID);
 
                 if(type != null){
-                    PotionEffect potionEffect = new PotionEffect(type, effectDuration, effectAmplifier);
+                    PotionEffect potionEffect = new PotionEffect(type, (effectDuration*2), effectAmplifier-1);
                     potionsEffects.add(potionEffect);
                 }else {
                     stringList.remove(effects);
@@ -76,7 +77,7 @@ public class DrugsConfig {
                 ingridients.put(ingridient, itemStack);
             }
 
-            Drug drug = new Drug(result, material, potionsEffects, shape, ingridients, result_item);
+            Drug drug = new Drug(result, material, potionsEffects, shape, ingridients, result_item, addictionMultiplier);
             drugs.add(drug);
         }
         return drugs;
@@ -109,6 +110,7 @@ public class DrugsConfig {
         configuration.set(drug.getName()+".Effects", effects);
         configuration.set(drug.getName()+".Shape", drug.getShape());
         configuration.set(drug.getName()+".Result", drug.getResult());
+        configuration.set(drug.getName()+".AddictionMultiplier", drug.getAddictionMultiplier());
         drug.getIngridients().forEach((s, itemStack) -> {
             configuration.set(drug.getName()+".Ingridients."+s, itemStack);
         });
