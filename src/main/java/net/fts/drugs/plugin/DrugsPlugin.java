@@ -3,6 +3,9 @@ package net.fts.drugs.plugin;
 import net.fts.drugs.commands.drugsCommand;
 import net.fts.drugs.configs.DrugsConfig;
 import net.fts.drugs.listener.InventoryClickListener;
+import net.fts.drugs.listener.setup.SetupChatListener;
+import net.fts.drugs.listener.setup.SetupInventoryClickListener;
+import net.fts.drugs.listener.setup.SetupSneakListener;
 import net.fts.drugs.utils.StorageManager;
 import net.fts.drugs.utils.storage.InventoryStorage;
 import org.bukkit.Bukkit;
@@ -31,6 +34,9 @@ public class DrugsPlugin extends JavaPlugin {
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new InventoryClickListener(), this);
+        pluginManager.registerEvents(new SetupInventoryClickListener(), this);
+        pluginManager.registerEvents(new SetupChatListener(), this);
+        pluginManager.registerEvents(new SetupSneakListener(), this);
 
         Objects.requireNonNull(getCommand("drugs")).setExecutor(new drugsCommand());
     }

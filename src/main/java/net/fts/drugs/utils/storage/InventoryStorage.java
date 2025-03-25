@@ -31,7 +31,7 @@ public class InventoryStorage {
             lore.add(Component.empty());
             lore.add(MiniMessage.miniMessage().deserialize("<red>Effekte:"));
             for (PotionEffect effect : drug.getEffects()) {
-                lore.add(MiniMessage.miniMessage().deserialize(effect.getType().toString() + effect.getAmplifier() + "; " + effect.getDuration() + " Ticks"));
+                lore.add(MiniMessage.miniMessage().deserialize("<dark_gray>» <gray>" + effect.getType().getName() +" "+ effect.getAmplifier() + "; " + effect.getDuration() + " Sekunden"));
             }
 
             inventory.addItem(new ItemCreator(drug.getMaterial()).displayName(MiniMessage.miniMessage().deserialize(drug.getName())).lore(lore).build());

@@ -4,12 +4,14 @@ import net.fts.drugs.objects.Drug;
 import net.fts.drugs.plugin.DrugsPlugin;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DrugsConfig {
@@ -38,9 +40,12 @@ public class DrugsConfig {
     public List<Drug> getDrugs(){
         List<Drug> drugs = new ArrayList<>();
         for (String result : configuration.getConfigurationSection("").getKeys(false)) {
-            Material material = Material.valueOf(result+".Material");
+            Material material = Material.valueOf(configuration.getString(result+".Material"));
             List<String> stringList = configuration.getStringList(result+".Effects");
+            List<String> shape = configuration.getStringList(result+".Shape");
+            HashMap<String, ItemStack> ingridients = new HashMap<>();
             List<PotionEffect> potionsEffects = new ArrayList<>();
+            ItemStack result_item = configuration.getItemStack(result+".Result");
 
             boolean changedEffects = false;
 
@@ -66,7 +71,12 @@ public class DrugsConfig {
                 saveConfig();
             }
 
-            Drug drug = new Drug(result, material, potionsEffects);
+            for (String ingridient : configuration.getConfigurationSection(result + ".Ingridients").getKeys(false)) {
+                ItemStack itemStack = configuration.getItemStack(result+".Ingridients."+ingridient);
+                ingridients.put(ingridient, itemStack);
+            }
+
+            Drug drug = new Drug(result, material, potionsEffects, shape, ingridients, result_item);
             drugs.add(drug);
         }
         return drugs;
@@ -89,14 +99,19 @@ public class DrugsConfig {
     public void addDrug(Drug drug){
         if(getDrug(drug.getName())!=null)
             return;
-        configuration.set(drug.getName()+".Material", drug.getMaterial());
+        configuration.set(drug.getName()+".Material", drug.getMaterial().toString());
 
         List<String> effects = new ArrayList<>();
         for (PotionEffect effect : drug.getEffects()) {
-            String str = effect.toString()+":"+effect.getDuration()+":"+effect.getAmplifier();
+            String str = effect.getType().getName()+":"+effect.getDuration()+":"+effect.getAmplifier();
             effects.add(str);
         }
         configuration.set(drug.getName()+".Effects", effects);
+        configuration.set(drug.getName()+".Shape", drug.getShape());
+        configuration.set(drug.getName()+".Result", drug.getResult());
+        drug.getIngridients().forEach((s, itemStack) -> {
+            configuration.set(drug.getName()+".Ingridients."+s, itemStack);
+        });
 
         saveConfig();
     }

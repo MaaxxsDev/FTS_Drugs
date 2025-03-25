@@ -1,5 +1,6 @@
 package net.fts.drugs.listener;
 
+import net.fts.drugs.utils.setups.setups.DrugSetup;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,6 +27,12 @@ public class InventoryClickListener implements Listener {
 
         if(event.getView().title().equals(MiniMessage.miniMessage().deserialize("<red><b>DRUGS</b> <dark_gray>» <white>Admin Interface"))){
             event.setCancelled(true);
+
+            switch (event.getRawSlot()){
+                case 49:
+                    new DrugSetup(player);
+                    break;
+            }
         }
     }
 
