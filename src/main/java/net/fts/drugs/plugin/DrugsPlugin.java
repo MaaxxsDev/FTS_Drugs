@@ -1,6 +1,9 @@
 package net.fts.drugs.plugin;
 
+import net.fts.drugs.commands.drugsCommand;
 import net.fts.drugs.configs.DrugsConfig;
+import net.fts.drugs.utils.StorageManager;
+import net.fts.drugs.utils.storage.InventoryStorage;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DrugsPlugin extends JavaPlugin {
@@ -8,6 +11,7 @@ public class DrugsPlugin extends JavaPlugin {
     private static DrugsPlugin instance;
 
     private DrugsConfig drugsConfig;
+    private StorageManager storageManager;
 
     @Override
     public void onEnable() {
@@ -18,6 +22,9 @@ public class DrugsPlugin extends JavaPlugin {
         }
 
         drugsConfig = new DrugsConfig();
+        storageManager = new StorageManager();
+
+        getCommand("drugs").setExecutor(new drugsCommand());
     }
 
     @Override
@@ -28,8 +35,10 @@ public class DrugsPlugin extends JavaPlugin {
     public static DrugsPlugin getInstance() {
         return instance;
     }
-
-    public DrugsConfig getDrugs() {
+    public DrugsConfig getDrugsManager() {
         return drugsConfig;
+    }
+    public StorageManager getStorageManager() {
+        return storageManager;
     }
 }
