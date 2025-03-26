@@ -3,14 +3,19 @@ package net.fts.drugs.objects;
 import net.fts.drugs.plugin.DrugsPlugin;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import java.awt.*;
+import java.security.spec.NamedParameterSpec;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class Drug {
 
@@ -64,23 +69,36 @@ public class Drug {
         ingridients.forEach((string, itemstack) -> {
             shapedRecipe.setIngredient(string.charAt(0), itemstack);
         });
+
         return shapedRecipe;
     }
 
     public HashMap<String, ItemStack> getIngridients() {
         return ingridients;
     }
+    public void setIngridients(HashMap<String, ItemStack> ingridients) {
+        this.ingridients = ingridients;
+    }
 
     public List<String> getShape() {
         return shape;
+    }
+
+    public void setShape(List<String> shape) {
+        this.shape = shape;
     }
 
     public ItemStack getResult() {
         ItemStack item = result;
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(getKey(), PersistentDataType.STRING, getName());
+        meta.removeAttributeModifier(Attribute.ATTACK_SPEED);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public void setResult(ItemStack result) {
+        this.result = result;
     }
 
     public double getAddictionMultiplier() {
@@ -90,7 +108,9 @@ public class Drug {
         this.addictionMultiplier = addictionMultiplier;
     }
 
+
     public NamespacedKey getKey() {
         return key;
     }
+
 }

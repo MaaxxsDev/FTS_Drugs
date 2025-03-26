@@ -128,12 +128,17 @@ public class PlayerInteractListener implements Listener {
                             player.sendMessage(MiniMessage.miniMessage().deserialize("<green>"+target.getName()+" ist gegen keine Droge süchtig"));
                             return;
                         }
+
+                        if(user.getStrongestAddiction().getStrength()<=20){
+                            player.sendMessage(MiniMessage.miniMessage().deserialize("<green>"+target.getName()+" ist gegen keine Droge süchtig"));
+                            return;
+                        }
+
                         player.sendMessage(Component.empty());
                         player.sendMessage(MiniMessage.miniMessage().deserialize(target.getName() + " ist süchtig gegen:"));
-                        player.sendMessage(Component.empty());
                         for (Addiction addiction : user.getAddictions()) {
-                            player.sendMessage(MiniMessage.miniMessage().deserialize("<dark_gray>»</dark_gray> " + addiction.getName()));
-                            player.sendMessage(MiniMessage.miniMessage().deserialize("<dark_gray>➥</dark_gray> Suchtentwicklung: " + addiction.getStrength()));
+                            player.sendMessage(MiniMessage.miniMessage().deserialize("<dark_gray>»</dark_gray> " + (addiction.getStrength()>=80?"<dark_red>":addiction.getStrength()>60?"<red>":addiction.getStrength()>=40?"<yellow>":"<gray>") + addiction.getName()));
+//                            player.sendMessage(MiniMessage.miniMessage().deserialize("<dark_gray>➥</dark_gray> Suchtentwicklung: " + addiction.getStrength()));
                         }
                     }
                 }, 20*4);

@@ -26,7 +26,19 @@ public class SetupChatListener implements Listener {
 
                 if(DrugsPlugin.getInstance().getStorageManager().getSetupManager().getSetup(player) instanceof DrugSetup setup){
                     event.setCancelled(true);
-                    setup.setName(PlainTextComponentSerializer.plainText().serialize(event.message()));
+                    String name = PlainTextComponentSerializer.plainText().serialize(event.message());
+
+                    if(!name.matches("^\\S+$")){
+                        player.sendMessage("<red>Die Drogenbezeichnung darf mehr als ein Wort beinhalten");
+                        return;
+                    }
+
+                    if(DrugsPlugin.getInstance().getDrugsManager().getDrug(name)!=null){
+                        player.sendMessage("<red>Diese Droge existiert schon");
+                        return;
+                    }
+
+                    setup.setName(name);
 
                     if(setup.getName()!=null&&!setup.getEffects().isEmpty()&&!setup.getIngridients().isEmpty()&&!setup.getShape().isEmpty()&&setup.getResult()!=null) {
                         player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Droge wurde erstellt"));

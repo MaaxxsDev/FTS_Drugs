@@ -6,6 +6,7 @@ import net.fts.drugs.objects.user.Addiction;
 import net.fts.drugs.objects.user.Rausch;
 import net.fts.drugs.plugin.DrugsPlugin;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,6 +37,7 @@ public class PlayerConsumeDrugListener implements Listener {
                         NamespacedKey key = drug.getKey();
                         if (namespacedKey.namespace().equals(key.namespace()) && namespacedKey.getKey().equals(key.getKey())) {
                             event.getItem().setAmount(event.getItem().getAmount()-1);
+                            Objects.requireNonNull(event.getPlayer().getAttribute(Attribute.ATTACK_SPEED)).setBaseValue(4);
                             int longestDuration = 0;
                             for (PotionEffect effect : drug.getEffects()) {
                                 if(effect.getDuration()>longestDuration){
@@ -47,7 +49,6 @@ public class PlayerConsumeDrugListener implements Listener {
                             longestDuration = (longestDuration/10)/2;
 
                             User user = DrugsPlugin.getInstance().getUserManager().getUser(event.getPlayer().getUniqueId());
-                            System.out.println(user);
                             boolean hasAddiction = false;
                             for (Addiction addiction : user.getAddictions()) {
                                 if(addiction.getName().equals(drug.getName())){

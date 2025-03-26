@@ -3,6 +3,7 @@ package net.fts.drugs.plugin;
 import net.fts.drugs.commands.drugsCommand;
 import net.fts.drugs.configs.DrugsConfig;
 import net.fts.drugs.configs.UserConfig;
+import net.fts.drugs.enums.Tools;
 import net.fts.drugs.listener.*;
 import net.fts.drugs.listener.consume.PlayerConsumeDrugListener;
 import net.fts.drugs.listener.setup.SetupChatListener;
@@ -16,6 +17,7 @@ import net.fts.drugs.utils.StorageManager;
 import net.fts.drugs.utils.items.ItemCreator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.apache.logging.log4j.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
@@ -32,6 +34,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import javax.sound.midi.Receiver;
 import java.util.*;
 
 public class DrugsPlugin extends JavaPlugin {
@@ -41,6 +44,8 @@ public class DrugsPlugin extends JavaPlugin {
     private DrugsConfig drugsConfig;
     private UserConfig usersConfig;
     private StorageManager storageManager;
+
+    private ArrayList<NamespacedKey> customRecipe;
 
     @Override
     public void onEnable() {
@@ -54,6 +59,8 @@ public class DrugsPlugin extends JavaPlugin {
         drugsConfig = new DrugsConfig();
         usersConfig = new UserConfig();
         storageManager = new StorageManager();
+
+        customRecipe = new ArrayList<>();
 
         loadReceipe();
 
@@ -69,6 +76,7 @@ public class DrugsPlugin extends JavaPlugin {
         pluginManager.registerEvents(new InventoryCloseListener(), this);
 
         Objects.requireNonNull(getCommand("drugs")).setExecutor(new drugsCommand());
+        Objects.requireNonNull(getCommand("drugs")).setTabCompleter(new drugsCommand());
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             User user = DrugsPlugin.getInstance().getUserManager().getUser(player.getUniqueId());
@@ -95,20 +103,39 @@ public class DrugsPlugin extends JavaPlugin {
         });
     }
 
+    public void unloadRecipe(){
+        List<String> unloaded = new ArrayList<>();
+
+        Iterator<Recipe> it = Bukkit.recipeIterator();
+        while (it.hasNext()){
+            Recipe recipe = it.next();
+            if (recipe instanceof Keyed keyed) {
+                if(keyed.getKey().namespace().equals("fts_drugs")){
+                    unloaded.add(keyed.getKey().getKey());
+                    it.remove();
+                }
+            }
+        }
+
+        Bukkit.getConsoleSender().sendMessage("Es wurden "+unloaded.size()+" Rezepte entladen: " + Strings.join(unloaded, ','));
+    }
+
     public void loadReceipe(){
-        ShapedRecipe Drugkit = new ShapedRecipe(new NamespacedKey(this, "drugset"), new ItemCreator(Material.NAUTILUS_SHELL).displayName(MiniMessage.miniMessage().deserialize("<red><b>Drugset")).addNamespacedKey("fts_drugs_items", "drugkit").build());
+        List<String> loaded = new ArrayList<>();
+
+        ShapedRecipe Drugkit = new ShapedRecipe(new NamespacedKey(this, "drugset"), Tools.DRUGKIT.getItemStack());
         Drugkit.shape(" A ", "BBB", "CCC");
         Drugkit.setIngredient('A', Material.BREWING_STAND);
         Drugkit.setIngredient('B', Material.DIAMOND);
         Drugkit.setIngredient('C', Material.EMERALD_BLOCK);
 
-        ShapedRecipe Gegengift = new ShapedRecipe(new NamespacedKey(this, "gegengift"), new ItemCreator(Material.POISONOUS_POTATO).displayName(MiniMessage.miniMessage().deserialize("<yellow><b>Gegengift")).addNamespacedKey("fts_drugs_items", "gegengift").build());
+        ShapedRecipe Gegengift = new ShapedRecipe(new NamespacedKey(this, "gegengift"), Tools.ANTIDOTE.getItemStack());
         Gegengift.shape("AAA", "BAB", " C ");
         Gegengift.setIngredient('A', Material.PUFFERFISH);
         Gegengift.setIngredient('B', Material.POISONOUS_POTATO);
         Gegengift.setIngredient('C', Material.WATER_BUCKET);
 
-        ShapedRecipe Tester = new ShapedRecipe(new NamespacedKey(this, "tester"), new ItemCreator(Material.STICK).enchant(Enchantment.UNBREAKING, 1).addItemFlag(ItemFlag.HIDE_ENCHANTS).displayName(MiniMessage.miniMessage().deserialize("<yellow>Drogentest")).addNamespacedKey("fts_drugs_items", "drogentest").lore(Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Rechtsklick auf einen Spieler, um den Test durchzuführen")).build());
+        ShapedRecipe Tester = new ShapedRecipe(new NamespacedKey(this, "tester"), Tools.DRUGTEST.getItemStack());
         Tester.shape("AAA", "BAB", " C ");
         Tester.setIngredient('A', Material.LAPIS_LAZULI);
         Tester.setIngredient('B', Material.REDSTONE);
@@ -116,22 +143,22 @@ public class DrugsPlugin extends JavaPlugin {
 
         int counter = 0;
         Bukkit.addRecipe(Drugkit);
-        Bukkit.getConsoleSender().sendMessage("Rezept " + Drugkit.getKey().getKey() + " wurde geladen");
+        loaded.add(Drugkit.getKey().getKey());
         counter+=1;
         Bukkit.addRecipe(Gegengift);
-        Bukkit.getConsoleSender().sendMessage("Rezept " + Gegengift.getKey().getKey() + " wurde geladen");
+        loaded.add(Gegengift.getKey().getKey());
         counter+=1;
         Bukkit.addRecipe(Tester);
-        Bukkit.getConsoleSender().sendMessage("Rezept " + Tester.getKey().getKey() + " wurde geladen");
+        loaded.add(Tester.getKey().getKey());
         counter+=1;
 
         for (Drug drug : getDrugsManager().getDrugs()) {
             Bukkit.addRecipe(drug.getReceipe());
-            Bukkit.getConsoleSender().sendMessage("Rezept " + drug.getReceipe().getKey().getKey() + " wurde geladen");
+            loaded.add(drug.getReceipe().getKey().getKey());
             counter+=1;
         }
 
-        Bukkit.getConsoleSender().sendMessage("Es wurden "+counter+" Rezepte geladen");
+        Bukkit.getConsoleSender().sendMessage("Es wurden "+counter+" Rezepte geladen: " + Strings.join(loaded, ','));
     }
 
     public void initRepatableTasks(){

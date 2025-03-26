@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class DrugsConfig {
@@ -50,7 +51,9 @@ public class DrugsConfig {
 
             boolean changedEffects = false;
 
-            for (String effects : stringList) {
+            Iterator<String> iterator = stringList.iterator();
+            while (iterator.hasNext()) {
+                String effects = iterator.next();
                 String[] str = effects.split(":");
                 String effectID = str[0];
                 int effectDuration = Integer.parseInt(str[1]);
@@ -58,12 +61,12 @@ public class DrugsConfig {
 
                 PotionEffectType type = PotionEffectType.getByName(effectID);
 
-                if(type != null){
-                    PotionEffect potionEffect = new PotionEffect(type, (effectDuration*2), effectAmplifier-1);
+                if (type != null) {
+                    PotionEffect potionEffect = new PotionEffect(type, (effectDuration * 2), effectAmplifier - 1);
                     potionsEffects.add(potionEffect);
-                }else {
-                    stringList.remove(effects);
-                    changedEffects=true;
+                } else {
+                    iterator.remove(); // ✅ erlaubt!
+                    changedEffects = true;
                 }
             }
 
@@ -94,12 +97,13 @@ public class DrugsConfig {
         if(configuration.contains(name)){
             configuration.set(name, null);
             saveConfig();
+            DrugsPlugin.getInstance().unloadRecipe();
+            DrugsPlugin.getInstance().loadReceipe();
         }
     }
 
     public void addDrug(Drug drug){
-        if(getDrug(drug.getName())!=null)
-            return;
+        configuration.set(drug.getName(), null);
         configuration.set(drug.getName()+".Material", drug.getMaterial().toString());
 
         List<String> effects = new ArrayList<>();
