@@ -1,6 +1,7 @@
 package net.fts.drugs.listener;
 
 import net.fts.drugs.objects.Drug;
+import net.fts.drugs.objects.FTSUser;
 import net.fts.drugs.objects.User;
 import net.fts.drugs.objects.user.Addiction;
 import net.fts.drugs.objects.user.Rausch;
@@ -49,17 +50,24 @@ public class PlayerInteractListener implements Listener {
 
         if(itemStack.getItemMeta().getPersistentDataContainer().has(namespacedKey)){
             if(itemStack.getItemMeta().getPersistentDataContainer().get(namespacedKey, PersistentDataType.STRING).equals("drugkit")) {
-                if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-                    Cache.drugset.add(event.getPlayer());
-                    Cache.recepies.put(event.getPlayer(), event.getPlayer().getDiscoveredRecipes());
-                    for (@NotNull Iterator<Recipe> it = Bukkit.recipeIterator(); it.hasNext(); ) {
-                        Recipe recipe = it.next();
-                        if (recipe instanceof Keyed keyed) {
-                            event.getPlayer().undiscoverRecipe(keyed.getKey());
+
+                FTSUser ftsUser = Cache.getFTSUser(event.getPlayer().getUniqueId());
+                if(ftsUser==null) {
+                    return;
+                }
+                if(ftsUser.hasRequiredSkill()){
+                    if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
+                        Cache.drugset.add(event.getPlayer());
+                        Cache.recepies.put(event.getPlayer(), event.getPlayer().getDiscoveredRecipes());
+                        for (@NotNull Iterator<Recipe> it = Bukkit.recipeIterator(); it.hasNext(); ) {
+                            Recipe recipe = it.next();
+                            if (recipe instanceof Keyed keyed) {
+                                event.getPlayer().undiscoverRecipe(keyed.getKey());
+                            }
                         }
+                        event.getPlayer().openWorkbench(event.getPlayer().getLocation(), true);
+                        event.getPlayer().getOpenInventory().setTitle("§e§lDrugkit");
                     }
-                    event.getPlayer().openWorkbench(event.getPlayer().getLocation(), true);
-                    event.getPlayer().getOpenInventory().setTitle("§e§lDrugkit");
                 }
             }
 

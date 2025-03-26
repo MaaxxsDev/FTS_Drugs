@@ -1,6 +1,7 @@
 package net.fts.drugs.listener;
 
 import net.fts.drugs.objects.Drug;
+import net.fts.drugs.objects.FTSUser;
 import net.fts.drugs.plugin.Cache;
 import net.fts.drugs.plugin.DrugsPlugin;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -14,6 +15,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -35,10 +37,20 @@ public class CratingTableListener implements Listener {
             if(event.getRecipe().getResult().hasItemMeta()){
                 for (NamespacedKey key : event.getRecipe().getResult().getItemMeta().getPersistentDataContainer().getKeys()) {
                     if(!isDrug(key)){
+                        System.out.println("Ist keine Droge");
                         event.getInventory().setResult(null);
                         return;
                     }
-                    return;
+                    FTSUser ftsUser = Cache.getFTSUser(event.getView().getPlayer().getUniqueId());
+                    if(ftsUser==null){
+                        event.getInventory().setResult(null);
+                    }else{
+                        if(!ftsUser.hasRequiredSkill()){
+                            event.getInventory().setResult(null);
+                            return;
+                        }
+                        return;
+                    }
                 }
                 event.getInventory().setResult(null);
             }else {
@@ -51,6 +63,19 @@ public class CratingTableListener implements Listener {
                 if(event.getRecipe().getResult()==null||event.getRecipe().getResult().getItemMeta().displayName()==null)return;
                 if(Objects.requireNonNull(event.getRecipe()).getResult().getType().equals(drug.getResult().getType()) && Objects.equals(event.getRecipe().getResult().getItemMeta().displayName(), drug.getReceipe().getResult().getItemMeta().displayName())){
                     event.getInventory().setResult(null);
+                }
+            }
+            if(event.getRecipe()==null)return;
+            if(event.getRecipe().getResult().getItemMeta().displayName()==null)return;
+            for (NamespacedKey key : event.getRecipe().getResult().getItemMeta().getPersistentDataContainer().getKeys()) {
+                if(key.getKey().equalsIgnoreCase("fts_drugs_items")){
+                    FTSUser ftsUser = Cache.getFTSUser(event.getView().getPlayer().getUniqueId());
+                    if(ftsUser==null){
+                        event.getInventory().setResult(null);
+                    }else{
+                        if(!ftsUser.hasRequiredSkill())
+                            event.getInventory().setResult(null);
+                    }
                 }
             }
         }

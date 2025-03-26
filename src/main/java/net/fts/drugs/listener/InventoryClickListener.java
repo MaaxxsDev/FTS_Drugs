@@ -83,10 +83,10 @@ public class InventoryClickListener implements Listener {
                 player.openInventory(DrugsPlugin.getInstance().getStorageManager().getInventoryStorage().getMultiplier(drug));
             }
             if(event.getRawSlot()==8){
-                DrugsPlugin.getInstance().getDrugsManager().getDrugs().remove(drug);
-                player.openInventory(DrugsPlugin.getInstance().getStorageManager().getInventoryStorage().getGUI());
+                DrugsPlugin.getInstance().getDrugsManager().removeDrug(drug.getName());
                 DrugsPlugin.getInstance().unloadRecipe();
                 DrugsPlugin.getInstance().loadReceipe();
+                player.openInventory(DrugsPlugin.getInstance().getStorageManager().getInventoryStorage().getGUI());
             }
         }
 

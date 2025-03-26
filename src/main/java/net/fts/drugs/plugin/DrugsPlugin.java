@@ -55,6 +55,7 @@ public class DrugsPlugin extends JavaPlugin {
             getDataFolder().mkdir();
         }
 
+        loadConfig();
 
         drugsConfig = new DrugsConfig();
         usersConfig = new UserConfig();
@@ -101,6 +102,13 @@ public class DrugsPlugin extends JavaPlugin {
                 player.discoverRecipe(namespacedKey);
             }
         });
+    }
+
+    public void loadConfig(){
+        getConfig().options().copyDefaults(true);
+        getConfig().addDefault("skillsPath", "plugins/FTSSkills/playerData");
+        getConfig().addDefault("skillName", "§5Alchemie II");
+        saveConfig();
     }
 
     public void unloadRecipe(){

@@ -54,6 +54,12 @@ public class ItemCreator {
         return this;
     }
 
+    public ItemCreator add(String keyName, String message){
+        NamespacedKey namespacedKey = new NamespacedKey(DrugsPlugin.getInstance(), keyName);
+        this.itemMeta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, message);
+        return this;
+    }
+
     public ItemCreator enchant(Enchantment enchantment, int amplifier){
         this.itemMeta.addEnchant(enchantment, amplifier, true);
         return this;

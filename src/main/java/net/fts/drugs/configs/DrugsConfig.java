@@ -94,12 +94,10 @@ public class DrugsConfig {
     }
 
     public void removeDrug(String name){
-        if(configuration.contains(name)){
-            configuration.set(name, null);
-            saveConfig();
-            DrugsPlugin.getInstance().unloadRecipe();
-            DrugsPlugin.getInstance().loadReceipe();
-        }
+        configuration.set(name, null);
+        saveConfig();
+        DrugsPlugin.getInstance().unloadRecipe();
+        DrugsPlugin.getInstance().loadReceipe();
     }
 
     public void addDrug(Drug drug){
