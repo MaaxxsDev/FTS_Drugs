@@ -35,7 +35,7 @@ public class InventoryStorage {
             lore.add(MiniMessage.miniMessage().deserialize("<red>Suchtentwicklung: <white>" + drug.getAddictionMultiplier()));
             lore.add(MiniMessage.miniMessage().deserialize("<red>Effekte:"));
             for (PotionEffect effect : drug.getEffects()) {
-                lore.add(MiniMessage.miniMessage().deserialize("<dark_gray>» <gray>" + effect.getType().getName() +" "+ effect.getAmplifier() + "; " + (effect.getDuration()/10)/2 + " Sekunden"));
+                lore.add(MiniMessage.miniMessage().deserialize("<dark_gray>» <gray>" + effect.getType().getName() +" "+ (effect.getAmplifier()+1) + "; " + (effect.getDuration()/10)/2 + " Sekunden"));
             };
 
             inventory.addItem(new ItemCreator(drug.getMaterial()).displayName(MiniMessage.miniMessage().deserialize(drug.getName())).lore(lore).build());
@@ -164,7 +164,7 @@ public class InventoryStorage {
             boolean done = false;
             for (PotionEffect effect : effects) {
                 if(effect.getType().equals(value)){
-                    inventory.addItem(new ItemCreator(Material.ENCHANTED_BOOK).displayName(MiniMessage.miniMessage().deserialize("<green>"+value.getName() + " " + (effect.getAmplifier()+1))).lore(Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Dauer: <white>" + (effect.getDuration()/10) + " Sekunden"), Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Linksklick zum Bearbeiten"), MiniMessage.miniMessage().deserialize("<gray>Rechtsklick zum Entfernen")).build());
+                    inventory.addItem(new ItemCreator(Material.ENCHANTED_BOOK).displayName(MiniMessage.miniMessage().deserialize("<green>"+value.getName() + " " + (effect.getAmplifier()+1))).lore(Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Dauer: <white>" + ((effect.getDuration()/10)/2) + " Sekunden"), Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Linksklick zum Bearbeiten"), MiniMessage.miniMessage().deserialize("<gray>Rechtsklick zum Entfernen")).build());
                     done=true;
                 }
             }

@@ -62,10 +62,10 @@ public class DrugsConfig {
                 PotionEffectType type = PotionEffectType.getByName(effectID);
 
                 if (type != null) {
-                    PotionEffect potionEffect = new PotionEffect(type, (effectDuration * 2), effectAmplifier - 1);
+                    PotionEffect potionEffect = new PotionEffect(type, effectDuration, effectAmplifier);
                     potionsEffects.add(potionEffect);
                 } else {
-                    iterator.remove(); // ✅ erlaubt!
+                    iterator.remove();
                     changedEffects = true;
                 }
             }

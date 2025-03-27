@@ -207,9 +207,11 @@ public class SetupInventoryClickListener implements Listener {
                 if(event.getRawSlot()==26){
                     PotionEffectType type = PotionEffectType.getByName(PlainTextComponentSerializer.plainText().serialize(event.getClickedInventory().getItem(4).getItemMeta().displayName()));
                     int amplifier = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(event.getClickedInventory().getItem(11).getItemMeta().displayName()).split(" ")[1]);
+                    amplifier=amplifier-1;
                     int duration = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(event.getClickedInventory().getItem(15).getItemMeta().displayName()).split(" ")[1]);
+                    duration = duration*10;
 
-                    PotionEffect potionEffect = new PotionEffect(type, duration*10, amplifier);
+                    PotionEffect potionEffect = new PotionEffect(type, duration, amplifier);
                     setup.getEffects().add(potionEffect);
                     player.openInventory(setup.getPotionsInv());
                 }

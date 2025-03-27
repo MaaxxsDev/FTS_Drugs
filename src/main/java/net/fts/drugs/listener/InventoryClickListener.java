@@ -323,10 +323,22 @@ public class InventoryClickListener implements Listener {
                 String[] str = text.split(" ");
                 int ampifier = Integer.parseInt(str[1]);
                 if(event.isLeftClick()){
-                    ampifier+=1;
+                    if(event.isShiftClick()){
+                        ampifier+=10;
+                    }else {
+                        ampifier+=1;
+                    }
                 }else if(event.isRightClick()){
-                    if(ampifier>1){
-                        ampifier-=1;
+                    if(event.isShiftClick()){
+                        if(ampifier>10){
+                            ampifier-=10;
+                        }else {
+                            ampifier=1;
+                        }
+                    }else {
+                        if (ampifier > 1) {
+                            ampifier -= 1;
+                        }
                     }
                 }
                 event.getClickedInventory().setItem(11, new ItemCreator(Material.PAPER).displayName(MiniMessage.miniMessage().deserialize("Amplifier: "+ampifier)).lore(Component.empty(), MiniMessage.miniMessage().deserialize("<gray>Linksklick zum Erhöhen"), MiniMessage.miniMessage().deserialize("<gray>Rechtsklick zum Verringern")).build());
@@ -352,7 +364,9 @@ public class InventoryClickListener implements Listener {
             if(event.getRawSlot()==26){
                 PotionEffectType type = PotionEffectType.getByName(PlainTextComponentSerializer.plainText().serialize(event.getClickedInventory().getItem(4).getItemMeta().displayName()));
                 int amplifier = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(event.getClickedInventory().getItem(11).getItemMeta().displayName()).split(" ")[1]);
+                amplifier = amplifier-1;
                 int duration = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(event.getClickedInventory().getItem(15).getItemMeta().displayName()).split(" ")[1]);
+                duration = (duration*10)*2;
 
                 PotionEffect exists = null;
                 for (PotionEffect effect : drug.getEffects()) {
@@ -365,7 +379,7 @@ public class InventoryClickListener implements Listener {
                     drug.getEffects().remove(exists);
                 }
 
-                PotionEffect potionEffect = new PotionEffect(type, duration*10, amplifier);
+                PotionEffect potionEffect = new PotionEffect(type, duration, amplifier);
                 drug.getEffects().add(potionEffect);
                 DrugsPlugin.getInstance().getDrugsManager().addDrug(drug);
                 player.openInventory(DrugsPlugin.getInstance().getStorageManager().getInventoryStorage().getPotionEffects(drug));
